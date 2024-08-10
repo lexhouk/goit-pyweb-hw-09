@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "goit-pyweb-hw-09"
+version = "0.1.0"
+description = "Parse quotes."
+authors = ["Oleksandr Horbatiuk <oleksandr.v.horbatiuk@gmail.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+beautifulsoup4 = "^4.12.3"
+requests = "^2.32.3"
+lxml = "^5.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
