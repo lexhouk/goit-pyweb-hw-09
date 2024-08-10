@@ -1,13 +1,25 @@
 from collections import defaultdict
 from json import dump
+from logging import basicConfig, INFO, info
 from re import search
 
 from bs4 import BeautifulSoup
 from requests import get
 
 
+def scrape(path: str) -> BeautifulSoup | None:
+    path = 'https://quotes.toscrape.com' + path
+
+    info(f'Parsing {path}')
+
+    response = get(path)
+
+    return BeautifulSoup(response.text, 'lxml') \
+        if response.status_code == 200 else None
+
+
 def main() -> None:
-    DOMAIN = 'https://quotes.toscrape.com'
+    basicConfig(level=INFO, format='%(message)s')
 
     ATTRIBUTES = {
         field: {key: field for key in ('class', 'itemprop')}
@@ -17,12 +29,7 @@ def main() -> None:
     results = defaultdict(list)
     path = '/'
 
-    while True:
-        if (response := get(DOMAIN + path)).status_code != 200:
-            break
-
-        page = BeautifulSoup(response.text, 'lxml')
-
+    while (page := scrape(path)):
         nodes = page.find_all(
             'div',
             {
@@ -60,13 +67,27 @@ def main() -> None:
         )):
             break
 
-    results['authors'] = list(set(results['authors']))
+    paths = set(results['authors'])
+    results['authors'] = []
+
+    for path in paths:
+        if not (page := scrape(path)):
+            continue
+
+        wrapper = page.find('div', class_='author-details')
+        author = {}
+
+        for name in ('title', 'born-date', 'born-location', 'description'):
+            field = 'fullname' if name == 'title' else name.replace('-', '_')
+            author[field] = wrapper.select(f'.author-{name}')[0].text.strip()
+
+        results['authors'].append(author)
 
     for type, result in results.items():
         with open(f'{type}.json', 'w', encoding='utf-8') as file:
             dump(result, file, indent=2, ensure_ascii=False)
 
-        print(f'Found {len(result)} {type}.')
+        info(f'Found {len(result)} {type}.')
 
 
 if __name__ == '__main__':
