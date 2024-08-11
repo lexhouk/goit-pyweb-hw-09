@@ -81,6 +81,9 @@ def main() -> None:
             field = 'fullname' if name == 'title' else name.replace('-', '_')
             author[field] = wrapper.select(f'.author-{name}')[0].text.strip()
 
+            if name == 'born-location':
+                author[field] = author[field][3:]
+
         results['authors'].append(author)
 
     for type, result in results.items():

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "goit-pyweb-hw-09"
 version = "0.1.0"
-description = "Parse quotes."
+description = "Parsing quotes and their authors."
 authors = ["Oleksandr Horbatiuk <oleksandr.v.horbatiuk@gmail.com>"]
 package-mode = false
 
@@ -10,6 +10,7 @@ python = "^3.12"
 beautifulsoup4 = "^4.12.3"
 requests = "^2.32.3"
 lxml = "^5.2.2"
+scrapy = "^2.11.2"
 
 
 [build-system]
